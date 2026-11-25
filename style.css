@@ -468,3 +468,35 @@ button.primary.danger{background:#b34659;color:white}
 @media(max-width:360px){.badge{display:none}.sheet-actions button{flex:1 1 110px}.calendar-month-row label{gap:6px}.progress-group-count{max-width:120px}}
 @media(max-width:800px){.progress-filter-top label input,.progress-filter-top label select{font-size:16px}}
 @media(max-width:800px){.row-name,.row-car,.attendance-cell select{font-size:16px}}
+
+
+/* PC 출석부 행 높이 줄이기 */
+@media (min-width: 801px) {
+  #tableWrap tbody td {
+    height: 32px;
+  }
+
+  #tableWrap .row-name,
+  #tableWrap .row-car {
+    height: 31px;
+    padding: 0 6px;
+    box-sizing: border-box;
+  }
+
+  #tableWrap .attendance-cell select {
+    height: 31px;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  #tableWrap .row-actions {
+    padding: 0 3px;
+  }
+
+  #tableWrap .row-actions button {
+    min-height: 0;
+    height: 28px;
+    padding: 0 5px;
+  }
+}
