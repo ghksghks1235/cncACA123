@@ -1,5 +1,5 @@
-import {esc,monthDays} from './domain.mjs?v=20261125-mobile2';
-import {calendarClasses,attendanceEvents,schedulePayload} from './calendar-domain.mjs?v=20261125-mobile2';
+import {esc,monthDays} from './domain.mjs?v=20261125-pwa1';
+import {calendarClasses,attendanceEvents,schedulePayload} from './calendar-domain.mjs?v=20261125-pwa1';
 export function createCalendar({getState,api,all,monthData,modal,toast,setSave,changeMonth}){
  const $=s=>document.querySelector(s),state=()=>getState();
  let mode='schedule',classId=null,teacher='',request=0,events=[],saving=false,selectedDate=null;

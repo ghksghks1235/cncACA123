@@ -1,7 +1,7 @@
-import {createAttendanceTools} from './attendance-tools.js?v=20261125-mobile2';
-import {createCalendar} from './calendar.js?v=20261125-mobile2';
-import {createProgress} from './progress.js?v=20261125-mobile2';
-import {STATUSES,statusClass,esc,monthDays,lessonDays,eligible,previousMonth,stats,groupStudentAttendance,withdrawalDate} from './domain.mjs?v=20261125-mobile2';
+import {createAttendanceTools} from './attendance-tools.js?v=20261125-pwa1';
+import {createCalendar} from './calendar.js?v=20261125-pwa1';
+import {createProgress} from './progress.js?v=20261125-pwa1';
+import {STATUSES,statusClass,esc,monthDays,lessonDays,eligible,previousMonth,stats,groupStudentAttendance,withdrawalDate} from './domain.mjs?v=20261125-pwa1';
 const URL='https://oqqxaywygvyxnxyytovg.supabase.co';
 const KEY='sb_publishable_i2ZlvLPNYHku81zNKlvL9A_Y2-eqhrX';
 const $=s=>document.querySelector(s);
