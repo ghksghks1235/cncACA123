@@ -1,10 +1,10 @@
-import {sortTeachers} from './ui-order.mjs?v=20261126-order1';
+import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
 import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
 import {isClosed} from './closures-domain.mjs?v=20261126-features1';
 import {createDuties} from './duties.mjs?v=20261126-features1';
 import {createAttendanceTools} from './attendance-tools.js?v=20261126-features1';
 import {createCalendar} from './calendar.js?v=20261126-features1';
-import {createProgress} from './progress.js?v=20261126-order1';
+import {createProgress} from './progress.js?v=20261126-order2';
 import {STATUSES,statusClass,esc,monthDays,lessonDays,eligible,previousMonth,stats,groupStudentAttendance,withdrawalDate} from './domain.mjs?v=20261126-features1';
 const URL='https://oqqxaywygvyxnxyytovg.supabase.co';
 const KEY='sb_publishable_i2ZlvLPNYHku81zNKlvL9A_Y2-eqhrX';

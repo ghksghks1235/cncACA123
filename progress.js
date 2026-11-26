@@ -1,4 +1,4 @@
-import {sortProgressClasses} from './ui-order.mjs?v=20261126-order1';
+import {sortProgressClasses} from './ui-order.mjs?v=20261126-order2';
 import {esc,monthDays} from './domain.mjs?v=20261126-features1';
 import {classGrade,availableCourses,latestProgress,recordPayload,koreanTimestamp,koreanDate,progressLabel} from './progress-domain.mjs?v=20261126-features1';
 
