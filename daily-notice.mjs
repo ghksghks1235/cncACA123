@@ -5,6 +5,11 @@ export function koreanToday(now=new Date()) {
  return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 }
 
+export function dailyTitle(date,teacher) {
+ const day=['일','월','화','수','목','금','토'][new Date(date+'T12:00:00Z').getUTCDay()];
+ return 'Today '+Number(date.slice(5,7))+'/'+Number(date.slice(8))+'('+day+') '+teacher;
+}
+
 export function dailyLines({date,teacher,teachers=[],classes=[],events=[]}) {
  const weekday=new Date(date+'T12:00:00Z').getUTCDay();
  const duty=dutyFor(date.slice(0,7),teacher),lines=[];
@@ -35,7 +40,7 @@ export function createDailyNotice({getState,readEvents,now=()=>new Date()}) {
   if(request!==sequence||getState().teacher!==teacher||!getState().ready||koreanToday(now())!==date||document.hidden)return;
   const lines=dailyLines({date,teacher,teachers:state.teachers,classes:state.classes,events});
   if(!lines.length)return;
-  el.innerHTML='<strong class="daily-notice-title">오늘의 알림</strong><ul>'+lines.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>';
+  el.innerHTML='<strong class="daily-notice-title">'+esc(dailyTitle(date,teacher))+'</strong><ul>'+lines.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>';
   el.hidden=false;timer=setTimeout(hide,7000);
  }
  document.addEventListener('visibilitychange',()=>{if(document.hidden){sequence++;hide();}else show();});

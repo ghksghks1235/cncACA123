@@ -1,4 +1,4 @@
-import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice1';
+import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
 import {isClosed} from './closures-domain.mjs?v=20261126-features1';
 import {createDuties} from './duties.mjs?v=20261126-features1';
 import {createAttendanceTools} from './attendance-tools.js?v=20261126-features1';
