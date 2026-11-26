@@ -112,3 +112,8 @@
  .progress-table .p-actions{align-items:center;gap:5px}
  .progress-table .p-actions button{min-height:30px;min-width:42px;padding:4px 6px;font-size:11px}
 }
+
+@media(max-width:800px){
+ .topbar{height:auto;min-height:54px;gap:8px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.top-right{flex:1;justify-content:flex-end;gap:6px;flex-wrap:wrap}.header-duties{order:3;flex-basis:100%;justify-content:flex-end;gap:5px}.header-duties button{font-size:11px;padding:5px 7px;min-height:30px}.duty-month{font-size:10px}
+ #eventForm .field-row{grid-template-columns:1fr}#eventForm input:not([type="checkbox"]):not([type="radio"]),#eventForm select{font-size:16px;min-height:40px}.event-colors span{padding:6px 9px}.closure-class-list label{min-height:32px}.closure-selected button{min-height:30px}#eventForm .actions button{min-height:36px}
+}

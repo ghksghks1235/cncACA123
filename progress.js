@@ -1,5 +1,5 @@
-import {esc,monthDays} from './domain.mjs?v=20261125-pwa1';
-import {classGrade,availableCourses,latestProgress,recordPayload,koreanTimestamp,koreanDate,progressLabel} from './progress-domain.mjs?v=20261125-pwa1';
+import {esc,monthDays} from './domain.mjs?v=20261126-features1';
+import {classGrade,availableCourses,latestProgress,recordPayload,koreanTimestamp,koreanDate,progressLabel} from './progress-domain.mjs?v=20261126-features1';
 
 export function createProgress({getState,api,all,modal,toast,setSave}){
  const $=s=>document.querySelector(s);

@@ -1,4 +1,4 @@
-import {esc,monthDays,offsetDate,withdrawalDate,vehicleCopyText} from './domain.mjs?v=20261125-pwa1';
+import {esc,monthDays,offsetDate,withdrawalDate,vehicleCopyText} from './domain.mjs?v=20261126-features1';
 export function createAttendanceTools({getState,monthData,modal,toast,mutate,rpc}){
  const $=s=>document.querySelector(s),state=()=>getState();
  async function vehicles(){

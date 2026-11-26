@@ -1,4 +1,4 @@
-import {monthDays} from './domain.mjs?v=20261125-pwa1';
+import {monthDays} from './domain.mjs?v=20261126-features1';
 export function calendarClasses(classes,teachers,docs,month,day){
  const available=new Map();
  for(const c of classes.filter(c=>c.slot.startsWith(day)&&c.starts_on<=monthDays(month).at(-1)&&(!c.ends_on||c.ends_on>=month+'-01')))available.set(c.id,{id:c.id,name:c.name,teacher:teachers.find(t=>t.id===c.teacher_id)?.code||'',slot:c.slot});
