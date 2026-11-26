@@ -547,3 +547,31 @@ button.primary.danger{background:#b34659;color:white}
     height: 3px;
   }
 }
+
+
+@media (min-width: 801px) {
+  /* 반 / 담당 너비 */
+  .progress-table th:first-child,
+  .progress-table td:first-child {
+    width: 125px;
+    min-width: 125px;
+    white-space: nowrap;
+  }
+
+  .progress-table .p-class strong,
+  .progress-table .p-class small {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  /* 현행·창의 두 줄씩 배경색 교차 */
+  [data-progress-group="current"] .progress-table tbody tr:nth-child(4n + 3) td,
+  [data-progress-group="current"] .progress-table tbody tr:nth-child(4n + 4) td {
+    background: #f0f5fc;
+  }
+
+  /* 각 묶음 아래 구분선 */
+  [data-progress-group="current"] .progress-table tbody tr:nth-child(2n) td {
+    border-bottom: 2px solid #d5dfed;
+  }
+}
