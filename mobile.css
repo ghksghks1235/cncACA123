@@ -129,3 +129,6 @@
   #tableWrap .sticky-name:has(.withdraw-badge) .row-name { height: 20px; }
   #tableWrap .withdraw-badge { margin: 0; padding: 0; line-height: 11px; }
 }
+
+/* 엑셀 다운로드 메뉴는 PC에서만 표시 */
+@media(max-width:800px){#mainSidebar nav #exportAttendance{display:none}}
