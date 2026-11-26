@@ -500,3 +500,50 @@ button.primary.danger{background:#b34659;color:white}
     padding: 0 5px;
   }
 }
+
+/* PC 진도표 행 높이 줄이기 */
+@media (min-width: 801px) {
+  .progress-table tbody td {
+    height: 32px;
+    padding: 0 6px;
+    line-height: 1.2;
+  }
+
+  .progress-table .p-class strong,
+  .progress-table .p-class small,
+  .progress-table .p-textbook small,
+  .progress-table .p-textbook strong,
+  .progress-table .p-timestamp small {
+    display: inline;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .progress-table .p-class small,
+  .progress-table .p-textbook strong,
+  .progress-table .p-timestamp small {
+    margin-left: 4px;
+  }
+
+  .progress-table .category-chip {
+    padding: 2px 5px;
+  }
+
+  .progress-table .p-actions {
+    white-space: nowrap;
+  }
+
+  .progress-table .p-actions button {
+    display: inline-block;
+    height: 26px;
+    min-height: 0;
+    padding: 0 6px;
+    margin: 0 1px;
+    font-size: 12px;
+  }
+
+  .progress-table progress {
+    margin-top: 2px;
+    height: 3px;
+  }
+}
