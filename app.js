@@ -1,4 +1,4 @@
-import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel1';
+import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel2';
 import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
 import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
 import {isClosed} from './closures-domain.mjs?v=20261126-features1';
