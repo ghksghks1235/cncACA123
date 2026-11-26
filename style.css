@@ -655,3 +655,10 @@ button.primary.danger{background:#b34659;color:white}
 /* 이번 달 담당이 있는 당번 버튼 강조 */
 .header-duties button.has-duty{background:#fff3c4;border-color:#e9cc69;color:#825d11}
 .header-duties button.has-duty strong{color:#825d11}
+
+/* 한국 시간 기준 오늘 날짜: 선택한 날짜와 별도로 표시 */
+.calendar-day.calendar-today{background:#fff8df}
+.calendar-day.calendar-today .day{color:#84611b;font-weight:700}
+.calendar-day.calendar-today .calendar-mobile-day{background:#fff8df}
+.calendar-day.calendar-today.selected-day .calendar-mobile-day{background:#fff8df;box-shadow:inset 0 0 0 2px #8ba8ef}
+.calendar-day.calendar-today .calendar-mobile-day>span{color:#84611b;font-weight:750}

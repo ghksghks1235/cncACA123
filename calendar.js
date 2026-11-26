@@ -16,13 +16,13 @@ export function createCalendar({getState,api,all,monthData,modal,toast,setSave,c
   $('#calendarTitle').textContent=mode==='schedule'?'씨앤씨 일정':mode==='teacher'?'선생님별 출결':mode==='토특'?'토요특강 출결':mode+'반 출결';
  }
  function draw(items,schedule=false){
-  const month=state().month,first=new Date(month+'-01T12:00:00').getDay();
+  const month=state().month,first=new Date(month+'-01T12:00:00').getDay(),today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
   const eventDate=e=>schedule?e.event_date:e.lesson_date;
-  if(!selectedDate?.startsWith(month)){const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());selectedDate=today.startsWith(month)?today:items[0]?eventDate(items[0]):month+'-01'}
+  if(!selectedDate?.startsWith(month)){selectedDate=today.startsWith(month)?today:items[0]?eventDate(items[0]):month+'-01'}
   const detailItem=e=>schedule?`<button class="calendar-event event-${eventColor(e.color)[0]}" data-event="${e.id}" aria-label="${esc(e.event_date)} ${esc(e.title)} 일정 보기">${e.is_closure?'휴강 · ':''}${esc(e.title)}</button>`:`<div class="calendar-item ${e.status==='결석'?'absent':'warning'}">${esc(e.name)} · ${esc(e.status)}<small>${esc(e.cls)}(${esc(e.teacher)})</small></div>`;
   $('#calendarGrid').innerHTML=Array.from({length:first},()=>'<div class="calendar-day outside"></div>').join('')+monthDays(month).map(date=>{
    const rows=items.filter(e=>eventDate(e)===date),count=schedule?rows.length+'개 일정':['결석','지각','조퇴'].map(status=>{const n=rows.filter(e=>e.status===status).length;return n?status+' '+n:''}).filter(Boolean).join(' · ');
-   return `<div class="calendar-day ${new Date(date+'T12:00:00').getDay()===0?'sunday':''} ${date===selectedDate?'selected-day':''}"><div class="calendar-desktop-items"><div class="day">${Number(date.slice(8))}일</div>${rows.map(detailItem).join('')}</div><button class="calendar-mobile-day" data-calendar-date="${date}" aria-pressed="${date===selectedDate}" aria-label="${esc(date)} ${rows.length?esc(count):'기록 없음'}"><span>${Number(date.slice(8))}</span><small>${rows.length?esc(count):''}</small></button></div>`;
+   return `<div class="calendar-day ${new Date(date+'T12:00:00').getDay()===0?'sunday':''} ${date===selectedDate?'selected-day':''} ${date===today?'calendar-today':''}"><div class="calendar-desktop-items"><div class="day">${Number(date.slice(8))}일</div>${rows.map(detailItem).join('')}</div><button class="calendar-mobile-day" data-calendar-date="${date}" ${date===today?'aria-current="date"':''} aria-pressed="${date===selectedDate}" aria-label="${esc(date)} ${rows.length?esc(count):'기록 없음'}"><span>${Number(date.slice(8))}</span><small>${rows.length?esc(count):''}</small></button></div>`;
   }).join('');
   let detail=$('#calendarDayDetail');if(!detail){detail=document.createElement('div');detail.id='calendarDayDetail';detail.className='calendar-day-detail';detail.setAttribute('aria-live','polite');$('#calendarGrid').after(detail)}
   const chosen=items.filter(e=>eventDate(e)===selectedDate);
