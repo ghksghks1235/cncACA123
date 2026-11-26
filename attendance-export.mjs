@@ -26,9 +26,11 @@ export function createAttendanceExport({getState,readDocuments,readEvents,modal,
  const $=s=>document.querySelector(s);let busy=false;
  function open(){
   const state=getState();if(busy||state.pending||state.loading){toast('저장과 불러오기가 끝난 뒤 다시 눌러주세요.');return;}if(!state.ready){toast('DB 연결 후 다시 눌러주세요.');return;}
-  modal(`<h2>출석부 엑셀 다운</h2><form id="exportForm"><label class="field">연월<input id="exportMonth" type="month" min="2026-12" required value="${esc(state.month)}"></label><label class="field">다운로드 대상<select id="exportTeacher"><option value="">전체 반</option>${state.teachers.map(t=>`<option value="${esc(t.code)}">${esc(t.code)} 선생님 담당 반</option>`).join('')}</select></label><p class="export-hint">월수·화목·토특을 반별 시트로 저장해요.</p><p id="exportError" class="form-error" role="alert" hidden></p><div class="actions"><button type="button" class="secondary" data-close>취소</button><button id="exportSubmit" class="primary" type="submit">엑셀 다운로드</button></div></form>`);
+  modal(`<h2>출석부 엑셀 다운</h2><form id="exportForm"><label class="field">연월<input id="exportMonth" type="month" min="2026-12" required value="${esc(state.month)}"></label><label class="field">선생님<select id="exportTeacher" required>${state.teachers.map(t=>`<option value="${esc(t.code)}">${esc(t.code)} 선생님 담당 반</option>`).join('')}</select></label><p class="export-hint">월수·화목·토특을 반별 시트로 저장해요.</p><p id="exportError" class="form-error" role="alert" hidden></p><div class="actions"><button type="button" class="secondary" data-close>취소</button><button id="exportSubmit" class="primary" type="submit">엑셀 다운로드</button></div></form>`);
+  $('#exportTeacher').value=state.teacher;
   $('#exportForm').onsubmit=async event=>{
    event.preventDefault();const month=$('#exportMonth').value,teacher=$('#exportTeacher').value;
+   if(!teacher||!state.teachers.some(t=>t.code===teacher)){$('#exportError').hidden=false;$('#exportError').textContent='다운로드할 선생님을 선택해주세요.';return;}
    if(!/^\d{4}-\d{2}$/.test(month)||month<'2026-12'||Number(month.slice(5))<1||Number(month.slice(5))>12){$('#exportError').hidden=false;$('#exportError').textContent='2026년 12월 이후의 연월을 선택해주세요.';return;}
    if(busy)return;busy=true;state.pending++;setBusy();$('#exportError').hidden=true;$('#dialog').querySelectorAll('button,input,select').forEach(e=>e.disabled=true);$('#exportSubmit').textContent='엑셀 만드는 중…';
    try{
@@ -36,7 +38,7 @@ export function createAttendanceExport({getState,readDocuments,readEvents,modal,
     const docs=exportDocuments({month,teacher,classes:state.classes,teachers:state.teachers,documents});
     if(!docs.length)throw Error('선택한 월에 다운로드할 반이 없어요.');
     const bytes=buildXlsx(exportSheets(docs,events,month));
-    const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`씨앤씨_${month}_${teacher||'전체반'}_출석부.xlsx`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);$('#dialog').close();toast(`${docs.length}개 반의 출석부를 내려받았어요.`);
+    const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`씨앤씨_${month}_${teacher}_출석부.xlsx`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);$('#dialog').close();toast(`${docs.length}개 반의 출석부를 내려받았어요.`);
    }catch(error){$('#exportError').hidden=false;$('#exportError').textContent=error.message;}
    finally{busy=false;state.pending--;setBusy();$('#dialog').querySelectorAll('button,input,select').forEach(e=>e.disabled=false);if($('#exportSubmit'))$('#exportSubmit').textContent='엑셀 다운로드';}
   };
