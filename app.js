@@ -1,3 +1,4 @@
+import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel1';
 import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
 import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
 import {isClosed} from './closures-domain.mjs?v=20261126-features1';
@@ -119,6 +120,16 @@ async function monthData(){
   const eventData=await readClosures(month);const rowSheets=new Map(rows.map(r=>[r.id,r.sheet_id]));
   return sheets.map(sheet=>({sheet,rows:rows.filter(r=>r.sheet_id===sheet.id),records:records.filter(r=>rowSheets.get(r.row_id)===sheet.id&&!isClosed(eventData,sheet.class_id,r.lesson_date))}));
 }
+// Read-only export of any selected month; never opens or creates documents.
+async function exportMonthDocuments(month){
+ if(state.demo)return structuredClone(Object.values(demoStore).filter(d=>d.sheet.month===month+'-01'));
+ const sheets=await all(`attendance_sheets?select=*&month=eq.${month}-01&order=id`);
+ if(!sheets.length)return [];
+ const ids=sheets.map(s=>s.id).join(',');
+ const [rows,records]=await Promise.all([all(`attendance_rows?select=*&sheet_id=in.(${ids})&order=position,id`),all(`attendance_records?select=*,attendance_rows!inner(sheet_id)&attendance_rows.sheet_id=in.(${ids})&order=lesson_date,id`)]);
+ const rowSheets=new Map(rows.map(r=>[r.id,r.sheet_id]));
+ return sheets.map(sheet=>({sheet,rows:rows.filter(r=>r.sheet_id===sheet.id),records:records.filter(r=>rowSheets.get(r.row_id)===sheet.id)}));
+}
 async function renderCalendar(){return calendar.render()}
 async function searchStudents(e){e?.preventDefault();const name=$('#searchInput').value.trim();if(!name)return;const target=state.month;$('#searchResults').innerHTML='<div class="empty">검색 중…</div>';try{const docs=await monthData();if(target!==state.month||state.view!=='search')return;const found=[];for(const d of docs){for(const row of d.rows.filter(r=>!r.deleted_at&&r.student_name.includes(name))){found.push({row,sheet:d.sheet,records:d.records.filter(r=>r.row_id===row.id)})}}$('#searchResults').classList.remove('empty');$('#searchResults').innerHTML=groupStudentAttendance(found).map(student=>`<article class="search-result"><h3>${esc(student.name)}</h3><div class="student-date-list">${student.dates.map(({date,records})=>`<section class="student-date"><h4>${Number(date.slice(5,7))}월 ${Number(date.slice(8))}일</h4><div class="student-day-records">${records.map(r=>`<div class="student-class-record"><span class="student-class-label"><strong>${esc(r.sheet.class_name)}</strong><small>${esc(r.sheet.teacher_code)} · ${esc(r.sheet.slot)}</small></span><span class="record-pill ${r.status==='결석'?'record-absent':['지각','조퇴'].includes(r.status)?'record-warning':''}">${esc(r.status)}</span></div>`).join('')}</div></section>`).join('')}</div>${student.unentered.length?`<div class="student-unentered">${student.unentered.map(sheet=>`${esc(sheet.class_name)} · ${esc(sheet.teacher_code)} · ${esc(sheet.slot)}`).join('<br>')}<span>입력된 출결 없음</span></div>`:''}</article>`).join('')||'<div class="empty">해당 월의 명단에 일치하는 이름이 없어요.</div>'}catch(e){$('#searchResults').innerHTML=`<div class="empty">${esc(e.message)}</div>`}}
 async function switchView(view){if(state.pending){toast('저장이 끝난 뒤 이동해주세요.');return}state.view=view;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));for(const v of ['attendance','calendar','search','progress'])$('#'+v+'View').hidden=v!==view;const names={attendance:'월별 출석부',calendar:'씨앤씨 캘린더',search:'학생 출결 검색',progress:'진도표'};$('#pageHeading').textContent=$('#breadcrumb').textContent=names[view];document.title=names[view]+' · 씨앤씨 클래스룸';$('#pageDescription').textContent={attendance:'',calendar:'',search:'',progress:''}[view];$('#pageDescription').hidden=true;$('.filter-card').hidden=['progress','calendar'].includes(view);$('#dayTabs').hidden=view==='search';$('.filter-bottom').hidden=view==='search';if(view==='attendance'){renderClassTabs();if(state.ready)await loadSheet()}else if(view==='calendar'&&state.ready)await calendar.enter();else if(view==='search'&&state.ready&&$('#searchInput').value.trim())await searchStudents();else if(view==='progress')await progress.enter()}
@@ -129,6 +140,8 @@ window.addEventListener('beforeunload',e=>{if(state.pending){e.preventDefault();
 setInterval(async()=>{if(!state.ready||state.loading||state.pending||$('#dialog').open||document.hidden||['INPUT','SELECT'].includes(document.activeElement?.tagName))return;if(state.view==='calendar'){await renderCalendar();return}if(state.view==='search'){if($('#searchInput').value.trim())await searchStudents();return}if(state.view==='progress')return;if(!state.sheet)return;const id=state.sheet.id;try{const [data,eventData]=await Promise.all([readSheetData(id),readClosures()]);const closureChanged=JSON.stringify(eventData)!==JSON.stringify(closureEvents);if(state.sheet?.id!==id||state.pending||state.loading)return;closureEvents=eventData;if(closureChanged||JSON.stringify(data.rows)!==JSON.stringify(state.rows)||JSON.stringify(data.records)!==JSON.stringify(state.records)){Object.assign(state,data);renderSheet();setSave(state.demo?'체험 기록 저장됨':'최신 기록 반영됨');if(state.view==='calendar')renderCalendar()}}catch{setSave('연결 확인 필요 · 새로 불러오기',true)}},15000);
 const dailyNotice=createDailyNotice({getState:()=>state,readEvents:async date=>{if(state.demo){try{return JSON.parse(localStorage.getItem('cnc-demo-events')||'[]')}catch{return []}}return all(`academy_events?select=*&deleted_at=is.null&event_date=eq.${date}&order=id`)}});
 const duties=createDuties({teacher:()=>state.teacher,modal});
+const attendanceExport=createAttendanceExport({getState:()=>state,readDocuments:exportMonthDocuments,readEvents:readClosures,modal,toast,setBusy});
+$('#exportAttendance').onclick=attendanceExport.open;
 const attendanceTools=createAttendanceTools({getState:()=>state,monthData,modal,toast,mutate,rpc});
 const calendar=createCalendar({getState:()=>state,api,all,monthData,modal,toast,setSave,eventsChanged:async()=>{closureEvents=await readClosures()},changeMonth:month=>{state.month=month;$('#month').value=month}});
 const progress=createProgress({getState:()=>state,api,all,modal,toast,setSave});
@@ -140,4 +153,5 @@ function restoreMenu(){let collapsed=mobileMenuQuery.matches;try{const saved=loc
 restoreMenu();mobileMenuQuery.addEventListener('change',restoreMenu);
 sidebarToggle.onclick=()=>setSidebarCollapsed(!document.body.classList.contains('sidebar-collapsed'));
 init();
+
 
