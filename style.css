@@ -651,3 +651,7 @@ button.primary.danger{background:#b34659;color:white}
 #eventForm input[type="checkbox"],#eventForm input[type="radio"]{min-height:0;width:16px;height:16px;flex-shrink:0;padding:0}.event-colors input[type="radio"]{width:1px!important;height:1px!important}.closure-cell{background:#f0f2f7!important;color:#7b8395;font-size:12px}.closure-detail{font-size:13px}
 .header-duties{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.duty-month{font-size:11px;color:#8491a8}.header-duties button{padding:6px 8px;border:1px solid #dfe6f2;border-radius:6px;background:#f7f9fd;color:#6d7c95;font-size:12px;white-space:nowrap}.header-duties strong{color:#405a83;margin-left:4px;font-weight:600}.duty-table{margin-top:14px}.duty-table th,.duty-table td{height:36px}.duty-table .my-duty td{background:#edf3ff;color:#3158a0;font-weight:650}
 #dialog:has(#eventForm){max-height:calc(100dvh - 24px);overflow-y:auto}#eventForm .field{margin:9px 0}#eventForm input:not([type="checkbox"]):not([type="radio"]),#eventForm select{min-width:0;width:100%;height:34px;padding:5px 8px;border:1px solid #dce3ef;border-radius:6px;background-color:white}#eventForm .actions{margin-top:12px}
+
+/* 이번 달 담당이 있는 당번 버튼 강조 */
+.header-duties button.has-duty{background:#fff3c4;border-color:#e9cc69;color:#825d11}
+.header-duties button.has-duty strong{color:#825d11}
