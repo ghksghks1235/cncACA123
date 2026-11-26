@@ -1,3 +1,4 @@
+import {sortProgressClasses} from './ui-order.mjs?v=20261126-order1';
 import {esc,monthDays} from './domain.mjs?v=20261126-features1';
 import {classGrade,availableCourses,latestProgress,recordPayload,koreanTimestamp,koreanDate,progressLabel} from './progress-domain.mjs?v=20261126-features1';
 
@@ -18,7 +19,7 @@ export function createProgress({getState,api,all,modal,toast,setSave}){
  async function render(){const req=++request;$('#progressBody').innerHTML='<div class="empty">교재와 최신 진도를 불러오고 있어요.</div>';$('#pRefresh').disabled=true;try{await catalog();await loadLatest();if(req!==request||state().view!=='progress')return;renderControls();renderBoard();setSave(state().demo?'체험 진도 · 브라우저 저장':'최신 진도를 불러왔어요')}catch(e){if(req===request){$('#progressBody').innerHTML=`<div class="empty"><strong>진도표를 불러오지 못했어요</strong>${esc(e.message)}<br>SQL 실행 후 ‘새로 불러오기’를 눌러주세요.</div>`;setSave('진도표 연결 확인 필요',true)}}finally{$('#pRefresh').disabled=false}}
  function renderControls(){document.querySelectorAll('[data-progress-day]').forEach(b=>b.classList.toggle('selected',b.dataset.progressDay===day));$('#pMonth').value=month;$('#pTeacher').innerHTML='<option value="">전체 선생님</option>'+state().teachers.map(t=>`<option value="${esc(t.code)}">${esc(t.code)} 선생님</option>`).join('');$('#pTeacher').value=teacherFilter;$('#pAuthor').textContent=state().teacher;$('#pTeacher').onchange=()=>{teacherFilter=$('#pTeacher').value;renderBoard()};$('#pMonth').onchange=()=>{const next=$('#pMonth').value;if(!/^\d{4}-\d{2}$/.test(next)||next<'2026-12'){toast('2026년 12월 이후를 선택해주세요.');$('#pMonth').value=month;return}month=next;renderBoard()};document.querySelectorAll('[data-progress-day]').forEach(b=>b.onclick=()=>{day=b.dataset.progressDay;renderControls();renderBoard()});$('#pRefresh').onclick=render}
  function renderBoard(){
-  const classes=visible(),map=new Map(latest.map(r=>[r.class_id+':'+r.category_snapshot,r]));
+  const classes=sortProgressClasses(visible(),state().classes,day,month),map=new Map(latest.map(r=>[r.class_id+':'+r.category_snapshot,r]));
   const rows=classes.flatMap(cls=>categories(cls).map(category=>({cls,category,record:map.get(cls.id+':'+category)})));
   const groups=[{key:'current',title:'현행·창의',rows:rows.filter(r=>r.cls.slot.endsWith('현행'))},{key:'advance',title:'선행',rows:rows.filter(r=>r.cls.slot.endsWith('선행'))}];
   $('#progressBody').innerHTML=groups.map(group=>{
