@@ -117,3 +117,15 @@
  .topbar{height:auto;min-height:54px;gap:8px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.top-right{flex:1;justify-content:flex-end;gap:6px;flex-wrap:wrap}.header-duties{order:3;flex-basis:100%;justify-content:flex-end;gap:5px}.header-duties button{font-size:11px;padding:5px 7px;min-height:30px}.duty-month{font-size:10px}
  #eventForm .field-row{grid-template-columns:1fr}#eventForm input:not([type="checkbox"]):not([type="radio"]),#eventForm select{font-size:16px;min-height:40px}.event-colors span{padding:6px 9px}.closure-class-list label{min-height:32px}.closure-selected button{min-height:30px}#eventForm .actions button{min-height:36px}
 }
+
+/* 모바일 월별 출석부: 학생 행을 32px로 압축 */
+@media (max-width: 800px) {
+  #tableWrap tbody td { height: 32px; padding-top: 0; padding-bottom: 0; }
+  #tableWrap .row-name,
+  #tableWrap .row-car { height: 31px; min-height: 0; padding-top: 0; padding-bottom: 0; line-height: 1.2; }
+  #tableWrap .attendance-cell select { height: 31px; min-height: 0; padding-top: 0; padding-bottom: 0; font-size: 16px; }
+  #tableWrap .row-actions { padding: 0 3px; }
+  #tableWrap .row-actions button { height: 28px; min-height: 0; padding: 0 4px; margin-top: 0; margin-bottom: 0; }
+  #tableWrap .sticky-name:has(.withdraw-badge) .row-name { height: 20px; }
+  #tableWrap .withdraw-badge { margin: 0; padding: 0; line-height: 11px; }
+}
