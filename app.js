@@ -143,6 +143,10 @@ const dailyNotice=createDailyNotice({getState:()=>state,readEvents:async date=>{
 const duties=createDuties({teacher:()=>state.teacher,modal});
 const usageGuide=createUsageGuide({modal,isBusy:()=>state.pending>0,toast});
 $('#usageGuide').onclick=usageGuide.open;
+$('#examSeating').onclick=()=>{
+  if(state.pending){toast('저장이 끝난 뒤 다시 눌러주세요.');return;}
+  modal('<h2>정기고사 자리배치</h2><p>개발 중이에요.</p><div class="actions"><button class="secondary" data-close>닫기</button></div>');
+};
 const attendanceExport=createAttendanceExport({getState:()=>state,readDocuments:exportMonthDocuments,readEvents:readClosures,modal,toast,setBusy});
 $('#exportAttendance').onclick=attendanceExport.open;
 const attendanceTools=createAttendanceTools({getState:()=>state,monthData,modal,toast,mutate,rpc});
