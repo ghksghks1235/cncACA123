@@ -1,4 +1,4 @@
-import {createUsageGuide} from './usage-guide.mjs?v=20261127-guide2';
+import {createUsageGuide} from './usage-guide.mjs?v=20261127-guide3';
 import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel2';
 import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
 import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
