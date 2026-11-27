@@ -13,7 +13,7 @@ ${section('캘린더·휴강 설정',`<p>씨앤씨 일정에서는 학원 일정
 ${section('학생 출결 검색',`<p>조회할 월을 고르고 학생 이름을 입력한 뒤 검색을 눌러요. 현재 선택한 선생님과 관계없이 모든 반에서 찾아요.</p>${image('search','양보라의 날짜별 출결을 검색한 화면','① 학생 이름 입력　② 검색')}<p>같은 학생의 기록은 날짜별로 모아 보여요. 결석은 분홍색, 지각·조퇴는 노란색으로 구별해요.</p>`)}
 ${section('진도 입력·이력 관리',`<ol><li>월수·화목과 조회할 월을 선택하고, 현행·창의 또는 선행을 펼쳐요.</li><li>해당 반의 ‘입력’을 눌러 수업 날짜·과정/교재·단원·쪽수를 입력한 뒤 저장해요.</li></ol>${image('progress-form','현행 진도의 교과 과정과 교재명·단원을 입력하는 창','① 교과 과정　② 교재명　③ 단원')}<p>현행·선행은 교과 과정을 선택하고 교재명을 직접 입력해요. 창의는 학년에 맞는 정해진 교재에서 선택해요. 진도는 저장 버튼을 눌러야 기록돼요.</p>${image('progress-history','진도 이력의 수정·삭제 버튼','① 기존 기록 수정　② 해당 기록 삭제')}<p class="guide-note">‘입력’은 새 기록 추가, ‘이력 → 수정’은 기존 기록 수정이에요. 최신 진도는 수업 날짜 기준으로 표시돼요. 토요특강은 진도표 대상이 아니에요.</p>`)}
 ${section('출석부 엑셀 다운로드',`<p>PC에서 왼쪽 ‘출석부 엑셀 다운’을 누르고 연월과 선생님을 선택해주세요.</p>${image('excel','엑셀 다운로드의 연월과 선생님 선택 창','① 연월　② 선생님　③ 엑셀 다운로드')}<p>월수·화목·토특을 포함해 반마다 시트 하나씩 저장해요. SH는 5개 시트, E는 6개 시트로 내려받아요. 엑셀 파일을 수정해도 사이트 기록은 바뀌지 않아요.</p><p class="guide-note">엑셀 다운로드 메뉴는 모바일에서 표시되지 않아요.</p>`)}
-<p class="guide-sample-note">안내 이미지는 박성환·양보라·신나래·박수정·김성희 가상 명단으로 만든 예시예요.</p><div class="actions"><button type="button" class="secondary" data-close>닫기</button></div></div>`);
+<div class="actions"><button type="button" class="secondary" data-close>닫기</button></div></div>`);
   document.querySelectorAll('.guide-shot').forEach(button=>button.onclick=()=>{const expanded=button.classList.toggle('is-zoomed');button.setAttribute('aria-expanded',String(expanded));button.setAttribute('aria-label',button.querySelector('img').alt+' 이미지 '+(expanded?'축소':'확대'));});
  }
  return {open};
