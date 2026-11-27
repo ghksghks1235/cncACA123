@@ -3,7 +3,7 @@ const section=(title,body)=>`<details class="guide-section"><summary>${title}</s
 export function createUsageGuide({modal,isBusy,toast}){
  function open(){
   if(isBusy()){toast('저장이 끝난 뒤 사용 안내를 열어주세요.');return;}
-  modal(`<div class="usage-guide"><h2>사용 안내</h2><p class="guide-intro">출석부의 이름·차량·출결은 자동 저장돼요. 입력 후 상단의 ‘저장됨’을 확인해주세요.</p><p class="guide-image-hint">이미지를 누르면 확대돼요. 확대된 이미지는 좌우로 밀어 볼 수 있어요.</p>
+  modal(`<div class="usage-guide"><div class="guide-header"><h2>사용 안내</h2><button type="button" class="secondary guide-close" data-close>닫기</button></div><p class="guide-intro">출석부의 이름·차량·출결은 자동 저장돼요. 입력 후 상단의 ‘저장됨’을 확인해주세요.</p><p class="guide-image-hint">이미지를 누르면 확대돼요. 확대된 이미지는 좌우로 밀어 볼 수 있어요.</p>
 ${section('처음-선생님 선택',`<ol><li>상단에서 본인 선생님 기호를 선택해주세요. 비밀번호는 없어요.</li><li>왼쪽 차량·스마일에는 선택한 선생님의 이번 달 당번이 표시돼요. 담당이 있으면 노란색으로 보여요.</li><li>차량·스마일을 누르면 이달의 전체 당번표를 확인할 수 있어요.</li></ol>${image('teacher','선생님 선택과 차량·스마일 당번 버튼','① 선생님 선택　② 차량 당번　③ 스마일 당번')}${image('duty-table','차량 버튼을 눌러 연 이달의 전체 당번표','차량·스마일을 각각 눌러 전체 담당을 확인해요.')}<p>접속 시에는 오늘의 당번과 일정이 잠깐 표시돼요. 오늘 안내할 내용이 없으면 나타나지 않아요.</p>`)}
 ${section('출석 입력하기',`<ol><li>월수·화목·토특과 해당 월을 고르고, 입력할 반을 선택해주세요.</li><li>학생 추가에서 이름과 차량을 입력해요. 표 안에서도 이름·차량을 수정할 수 있어요.</li><li>날짜별 메뉴에서 출석·결석·지각·조퇴를 선택하면 자동 저장돼요.</li><li>‘전원 출석’은 선택한 날짜의 입력 가능한 빈칸만 채워요. 이미 입력한 출결은 유지돼요.</li></ol>${image('class-tabs','수업 구분과 현행·선행 반 선택','① 월수·화목·토특 선택　② 입력할 반 선택')}${image('attendance','가상 학생 다섯 명의 출석 입력 화면','① 학생 추가　② 전원 출석　③ 전원 출석을 처리할 날짜')}${image('add-student','학생 추가 창의 이름과 차량 입력칸','① 학생 이름　② 차량　③ 추가하고 저장')}<p class="guide-note">빈칸은 미입력이에요. 휴강일에는 출결 메뉴가 표시되지 않아요.</p>`)}
 ${section('새달 명단 가져오기',`<ol><li>새달을 선택하고 같은 반의 ‘이전 달 명단 불러오기’를 눌러요.</li><li>불러올 학생 목록을 확인한 뒤 명단 불러오기를 눌러요.</li></ol>${image('import-roster','이전 달의 최신 학생 명단을 확인하는 창','① 목록을 확인한 뒤 명단 불러오기')}<p>이전 달의 최신 이름·차량을 가져와요. 출결은 복사하지 않으며, 퇴원하거나 삭제한 학생은 제외돼요.</p><p class="guide-note">현재 달에 출결이 이미 있으면 명단 전체 교체가 막혀요. 학생 추가·행 삭제로 수정해주세요. 다른 달에 이미 만든 명단은 자동으로 바뀌지 않아요.</p>`)}
@@ -13,7 +13,7 @@ ${section('캘린더·휴강 설정',`<p>씨앤씨 일정에서는 학원 일정
 ${section('학생 출결 검색',`<p>조회할 월을 고르고 학생 이름을 입력한 뒤 검색을 눌러요. 현재 선택한 선생님과 관계없이 모든 반에서 찾아요.</p>${image('search','양보라의 날짜별 출결을 검색한 화면','① 학생 이름 입력　② 검색')}<p>같은 학생의 기록은 날짜별로 모아 보여요. 결석은 분홍색, 지각·조퇴는 노란색으로 구별해요.</p>`)}
 ${section('진도 입력·이력 관리',`<ol><li>월수·화목과 조회할 월을 선택하고, 현행·창의 또는 선행을 펼쳐요.</li><li>해당 반의 ‘입력’을 눌러 수업 날짜·과정/교재·단원·쪽수를 입력한 뒤 저장해요.</li></ol>${image('progress-form','현행 진도의 교과 과정과 교재명·단원을 입력하는 창','① 교과 과정　② 교재명　③ 단원')}<p>현행·선행은 교과 과정을 선택하고 교재명을 직접 입력해요. 창의는 학년에 맞는 정해진 교재에서 선택해요. 진도는 저장 버튼을 눌러야 기록돼요.</p>${image('progress-history','진도 이력의 수정·삭제 버튼','① 기존 기록 수정　② 해당 기록 삭제')}<p class="guide-note">‘입력’은 새 기록 추가, ‘이력 → 수정’은 기존 기록 수정이에요. 최신 진도는 수업 날짜 기준으로 표시돼요. 토요특강은 진도표 대상이 아니에요.</p>`)}
 ${section('출석부 엑셀 다운로드',`<p>PC에서 왼쪽 ‘출석부 엑셀 다운’을 누르고 연월과 선생님을 선택해주세요.</p>${image('excel','엑셀 다운로드의 연월과 선생님 선택 창','① 연월　② 선생님　③ 엑셀 다운로드')}<p>월수·화목·토특을 포함해 반마다 시트 하나씩 저장해요. SH는 5개 시트, E는 6개 시트로 내려받아요. 엑셀 파일을 수정해도 사이트 기록은 바뀌지 않아요.</p><p class="guide-note">엑셀 다운로드 메뉴는 모바일에서 표시되지 않아요.</p>`)}
-<div class="actions"><button type="button" class="secondary" data-close>닫기</button></div></div>`);
+</div>`);
   document.querySelectorAll('.guide-shot').forEach(button=>button.onclick=()=>{const expanded=button.classList.toggle('is-zoomed');button.setAttribute('aria-expanded',String(expanded));button.setAttribute('aria-label',button.querySelector('img').alt+' 이미지 '+(expanded?'축소':'확대'));});
  }
  return {open};
