@@ -1,3 +1,4 @@
+import {createUsageGuide} from './usage-guide.mjs?v=20261127-guide1';
 import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel2';
 import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
 import {createDailyNotice} from './daily-notice.mjs?v=20261126-notice2';
@@ -140,6 +141,8 @@ window.addEventListener('beforeunload',e=>{if(state.pending){e.preventDefault();
 setInterval(async()=>{if(!state.ready||state.loading||state.pending||$('#dialog').open||document.hidden||['INPUT','SELECT'].includes(document.activeElement?.tagName))return;if(state.view==='calendar'){await renderCalendar();return}if(state.view==='search'){if($('#searchInput').value.trim())await searchStudents();return}if(state.view==='progress')return;if(!state.sheet)return;const id=state.sheet.id;try{const [data,eventData]=await Promise.all([readSheetData(id),readClosures()]);const closureChanged=JSON.stringify(eventData)!==JSON.stringify(closureEvents);if(state.sheet?.id!==id||state.pending||state.loading)return;closureEvents=eventData;if(closureChanged||JSON.stringify(data.rows)!==JSON.stringify(state.rows)||JSON.stringify(data.records)!==JSON.stringify(state.records)){Object.assign(state,data);renderSheet();setSave(state.demo?'체험 기록 저장됨':'최신 기록 반영됨');if(state.view==='calendar')renderCalendar()}}catch{setSave('연결 확인 필요 · 새로 불러오기',true)}},15000);
 const dailyNotice=createDailyNotice({getState:()=>state,readEvents:async date=>{if(state.demo){try{return JSON.parse(localStorage.getItem('cnc-demo-events')||'[]')}catch{return []}}return all(`academy_events?select=*&deleted_at=is.null&event_date=eq.${date}&order=id`)}});
 const duties=createDuties({teacher:()=>state.teacher,modal});
+const usageGuide=createUsageGuide({modal,isBusy:()=>state.pending>0,toast});
+$('#usageGuide').onclick=usageGuide.open;
 const attendanceExport=createAttendanceExport({getState:()=>state,readDocuments:exportMonthDocuments,readEvents:readClosures,modal,toast,setBusy});
 $('#exportAttendance').onclick=attendanceExport.open;
 const attendanceTools=createAttendanceTools({getState:()=>state,monthData,modal,toast,mutate,rpc});
@@ -153,5 +156,6 @@ function restoreMenu(){let collapsed=mobileMenuQuery.matches;try{const saved=loc
 restoreMenu();mobileMenuQuery.addEventListener('change',restoreMenu);
 sidebarToggle.onclick=()=>setSidebarCollapsed(!document.body.classList.contains('sidebar-collapsed'));
 init();
+
 
 

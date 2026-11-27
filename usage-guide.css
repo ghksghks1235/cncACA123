@@ -1,0 +1,10 @@
+#dialog:has(.usage-guide){width:920px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto;padding:24px;border-radius:14px}
+.usage-guide h2{margin-bottom:10px}.usage-guide .guide-intro{background:#edf3ff;border-radius:8px;padding:11px 13px;color:#405b88;font-size:13px;line-height:1.6;margin:0 0 8px}
+.usage-guide .guide-image-hint{font-size:12px;line-height:1.5;margin:0 0 16px;color:#8b98ab}
+.guide-section{border:1px solid #e1e7f1;border-radius:9px;background:#fff;margin:9px 0;overflow:hidden}
+.guide-section>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;font-size:14px;font-weight:650;color:#3c5379;background:#f8faff}
+.guide-section>summary::-webkit-details-marker{display:none}.guide-section>summary:after{content:'＋';font-size:17px;font-weight:400;color:#7f91ac}.guide-section[open]>summary:after{content:'−'}
+.guide-content{padding:4px 16px 16px}.usage-guide .guide-content p,.guide-content li{font-size:13px;line-height:1.8;color:#62738d}.guide-content ol{padding-left:22px;margin:12px 0}.guide-content h3{font-size:14px;color:#3d557d;margin:16px 0 6px}
+.guide-figure{margin:14px 0}.guide-shot{display:block;width:100%;padding:0;background:white;border:1px solid #e1e7f1;border-radius:8px;overflow:auto;max-height:70dvh;text-align:left;cursor:zoom-in}.guide-shot img{display:block;width:auto;max-width:100%;height:auto;margin:0 auto}.guide-shot.is-zoomed{cursor:zoom-out}.guide-shot.is-zoomed img{width:1100px;max-width:none;margin:0}
+.guide-figure figcaption{font-size:12px;line-height:1.6;margin-top:6px;color:#7c8ba2}.usage-guide .guide-note{background:#fff7df;color:#886d31;padding:9px 11px;border-radius:7px}.usage-guide .guide-sample-note{font-size:11px;line-height:1.5;color:#96a1b2;margin:15px 0 0}
+@media(max-width:800px){#dialog:has(.usage-guide){padding:16px 12px;max-height:calc(100dvh - 20px)}.guide-section>summary{padding:12px;font-size:13px}.guide-content{padding:2px 10px 12px}.guide-content ol{padding-left:20px}.guide-shot{max-height:65dvh}.guide-figure figcaption{font-size:11px}}
