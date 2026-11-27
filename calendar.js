@@ -10,6 +10,11 @@ export function createCalendar({getState,api,all,monthData,modal,toast,setSave,c
  function controls(){
   document.querySelectorAll('[data-calendar-mode]').forEach(b=>{b.classList.toggle('selected',b.dataset.calendarMode===mode);b.onclick=()=>{if(saving)return;mode=b.dataset.calendarMode;classId=null;render()}});
   $('#calendarMonth').value=state().month;
+  $('#calendarPrevMonth').disabled=state().month<='2026-12'||saving;
+  $('#calendarNextMonth').disabled=saving;
+  const stepMonth=delta=>{if(saving||state().pending)return;const [year,month]=state().month.split('-').map(Number),date=new Date(Date.UTC(year,month-1+delta,1)),next=date.toISOString().slice(0,7);if(next<'2026-12')return;changeMonth(next);render();};
+  $('#calendarPrevMonth').onclick=()=>stepMonth(-1);
+  $('#calendarNextMonth').onclick=()=>stepMonth(1);
   $('#calendarMonth').onchange=()=>{const month=$('#calendarMonth').value;if(!/^\d{4}-\d{2}$/.test(month)||month<'2026-12'){toast('2026년 12월 이후를 선택해주세요.');$('#calendarMonth').value=state().month;return}changeMonth(month);render()};
   $('#calendarRefresh').onclick=render;
   $('#addEvent').hidden=mode!=='schedule';$('#addEvent').onclick=()=>openEvent();
