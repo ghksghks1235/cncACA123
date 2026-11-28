@@ -1,6 +1,7 @@
 import {esc} from './domain.mjs?v=20261126-features1';
-import {defaultRooms,buildRoster,validate,moveStudent,seatKey,classColor,paperCounts} from './exam-domain.mjs?v=20261127-exam1';
+import {defaultRooms,buildRoster,validate,moveStudent,seatKey,classColor,paperCounts} from './exam-domain.mjs?v=20261128-solver1';
 import {roomPdf} from './exam-pdf.mjs?v=20261127-exam1';
+import {mixMetrics} from './exam-solver.mjs?v=20261128-solver1';
 const $=s=>document.querySelector(s),clone=x=>structuredClone(x);
 const koreanToday=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 export function createExamSeating({getState,all,api,readDocuments,modal,toast}){
@@ -9,7 +10,7 @@ export function createExamSeating({getState,all,api,readDocuments,modal,toast}){
  const current=()=>draft?.days[day];
  const editable=()=>!!token&&!busy;
  function notify(message){toast(message);}
- function changed(){dirty=true;render();}
+ function changed(){if(current())delete current().optimization;dirty=true;render();}
  function checkpoint(){history.push(clone(draft));if(history.length>25)history.shift();}
  function leave(){return !dirty||confirm('저장하지 않은 자리배치 변경이 있어요. 저장하지 않고 이동할까요?');}
  function failure(error){if(/잠금.*만료|비밀번호/.test(error.message))token=null;notify(error.message);}
@@ -68,16 +69,20 @@ export function createExamSeating({getState,all,api,readDocuments,modal,toast}){
    plan.students=result.students.map(s=>({...s,absent:old.get(s.id)?.absent||false}));
    const ids=new Set(plan.students.map(s=>s.id));for(const k of Object.keys(plan.seats))if(!ids.has(plan.seats[k]))delete plan.seats[k];
    if(validate(plan).errors.length){plan.seats={};notify('반 정보가 바뀌어 기존 배치를 초기화했어요. 실행 취소로 되돌릴 수 있어요.');}else notify(`${day}반 ${plan.students.length}명의 명단을 확인했어요.`);
-   dirty=true;selected=null;
+   delete plan.optimization;dirty=true;selected=null;
   });
  }
  async function automatic(){
   if(!editable()||!current()?.students.length){notify('명단을 먼저 불러와주세요.');return;}
   if(Object.keys(current().seats).length&&!confirm(`${day}반의 현재 배치를 새로 자동배치할까요? 실행 취소로 되돌릴 수 있어요.`))return;
   await task(async()=>{
-   const result=await new Promise((resolve,reject)=>{worker=new Worker(new URL('./exam-worker.mjs?v=20261127-exam1',import.meta.url),{type:'module'});const timer=setTimeout(()=>{worker.terminate();worker=null;reject(Error('계산 시간이 길어 중단했어요. 현재 배치는 유지돼요.'));},60000);const finish=()=>{clearTimeout(timer);worker?.terminate();worker=null;};worker.onmessage=({data})=>{finish();data.error?reject(Error(data.error)):resolve(data.plan);};worker.onerror=()=>{finish();reject(Error('자동배치를 실행하지 못했어요. 새로고침 후 다시 시도해주세요.'));};worker.postMessage({plan:clone(current()),seed:Date.now()});});
-   const checked=validate(result);if(checked.errors.length)throw Error(checked.errors[0]);checkpoint();draft.days[day]=result;dirty=true;selected=null;
-   notify(checked.unplaced.length?`${checked.unplaced.length}명이 미배치예요. 자리 수와 학년별 줄 구성을 확인해주세요. 조건을 바꿔 다시 시도할 수 있어요.`:'필수 규칙을 지켜 자동배치했어요.');
+   const outcome=await new Promise((resolve,reject)=>{worker=new Worker(new URL('./exam-worker.mjs?v=20261128-solver1',import.meta.url),{type:'module'});let incumbent=null;const timer=setTimeout(()=>{worker?.terminate();worker=null;resolve(incumbent?{plan:incumbent,status:'best_found'}:{plan:null,status:'no_solution_found'});},30000);const finish=()=>{clearTimeout(timer);worker?.terminate();worker=null;};worker.onmessage=({data})=>{
+    if(data.type==='progress'){const p=data.progress;if(p.plan){incumbent=p.plan;incumbent.optimization={status:'best_found',certifiedMix:null};}const el=$('#examSearchProgress');if(el)el.textContent=`탐색 ${Math.floor(p.elapsedMs/1000)}초 · ${p.bestPenalty===null?'전원 배치 찾는 중':`현재 섞임 ${p.bestPenalty}점 · 최소값 검증 중`} · ${p.nodes.toLocaleString()}개 상태 확인`;return;}
+    finish();data.error?reject(Error(data.error)):resolve(data.result);
+   };worker.onerror=()=>{finish();reject(Error('자동배치를 실행하지 못했어요. 새로고침 후 다시 시도해주세요.'));};worker.postMessage({plan:clone(current()),seed:Date.now(),timeLimitMs:14000});});
+   if(!outcome.plan){notify(outcome.status==='infeasible'?(outcome.reason||'현재 조건에서는 전원 배치가 불가능해요. 강의실 설정을 확인해주세요.'):'시간 안에 전원 배치를 찾지 못했어요. 불가능하다고 판정한 것은 아니며 기존 배치는 유지했어요.');return;}
+   const result=outcome.plan,checked=validate(result,{complete:true});if(checked.errors.length)throw Error(checked.errors[0]);checkpoint();draft.days[day]=result;dirty=true;selected=null;
+   notify(outcome.status==='optimal'?`전원 배치 · 선행반 섞임 최소 ${mixMetrics(result).penalty}점 확인. 현재 상태 저장을 눌러주세요.`:`전원 배치 · 현재까지 찾은 최선 ${mixMetrics(result).penalty}점. 최적 여부는 미확인이에요.`);
   });
  }
  function relocate(id,target){if(!editable())return;try{const next=moveStudent(current(),id,target);checkpoint();draft.days[day]=next;selected=null;changed();}catch(e){notify(e.message);}}
@@ -121,6 +126,9 @@ export function createExamSeating({getState,all,api,readDocuments,modal,toast}){
   const plan=current(),check=validate(plan),placed=new Set(Object.values(plan.seats)),pool=plan.students.filter(x=>!placed.has(x.id)),students=new Map(plan.students.map(x=>[x.id,x]));
   const capacity=plan.rooms.filter(r=>r.enabled).reduce((sum,r)=>sum+r.columns.reduce((a,b)=>a+b,0),0),absents=plan.students.filter(x=>x.absent).length;
   root().insertAdjacentHTML('beforeend',`<div class="exam-toolbar"><div><strong>${check.seated}명 배치</strong><span> / 참석 ${plan.students.length-absents}명 · ${capacity}석 · 미배치 ${check.unplaced.length}명 · 불참 ${absents}명</span></div><div class="exam-actions">${token?`<button class="secondary" id="examSettings" ${!can?'disabled':''}>시험 설정</button><button class="secondary" id="examImport" ${!can?'disabled':''}>명단 불러오기</button><button class="secondary" id="examRoomSettings" ${!can?'disabled':''}>강의실·감독</button><button class="secondary" id="examAbsences" ${!can?'disabled':''}>불참 학생</button><button class="primary" id="examAuto" ${!can||!plan.students.length?'disabled':''}>자동배치</button><button class="secondary" id="examClear" ${!can?'disabled':''}>배치 비우기</button><button class="secondary" id="examUndo" ${!can||!history.length?'disabled':''}>실행 취소</button><button class="primary" id="examSave" ${!can||!dirty?'disabled':''}>현재 상태 저장</button>`:''}<button class="secondary" id="examPapers" ${busy?'disabled':''}>시험지 수량</button><button class="secondary" id="examPDF" ${busy?'disabled':''}>인쇄용 PDF</button></div></div>${check.unplaced.length?`<div class="exam-warning">참석 학생 ${check.unplaced.length}명이 미배치예요. ${capacity<plan.students.length-absents?'전체 좌석이 부족해요. 임시 강의실 사용 또는 불참 명단을 확인해주세요.':'자동배치를 실행하거나, 학년별 줄 구성과 빈자리를 확인해 배치해주세요.'}</div>`:''}${check.errors.length?`<div class="exam-error">${check.errors.map(esc).join('<br>')}</div>`:''}${check.teacherOverlap.length?`<details class="exam-overlap"><summary>현행 담임과 겹친 학생 ${check.teacherOverlap.length}명 · 허용</summary>${check.teacherOverlap.map(x=>esc(x.name+'('+x.currentClass+')')).join(', ')}</details>`:''}<div class="exam-workspace"><aside class="exam-pool"><div class="exam-pool-head"><h2>미배치 <small>${pool.length}</small></h2><input id="examSearch" placeholder="이름 검색" aria-label="미배치 이름 검색" value="${esc(search)}"><select id="examClassFilter" aria-label="현행반 필터"><option value="">모든 현행반</option>${[...new Set(plan.students.map(x=>x.currentClass))].map(name=>`<option value="${esc(name)}" ${classFilter===name?'selected':''}>${esc(name)}</option>`).join('')}</select>${can?'<p>학생을 끌거나, 학생 선택 후 좌석을 눌러요. 여기로 옮기면 자리만 해제돼요.</p>':''}</div><div class="exam-pool-list" data-pool>${pool.filter(x=>(!classFilter||x.currentClass===classFilter)&&x.name.includes(search)).reduce((html,x,i,a)=>html+(i===0||a[i-1].currentClass!==x.currentClass?`<h3><i style="background:${classColor(x.currentClass)}"></i>${esc(x.currentClass)}</h3>`:'')+card(x),'')||'<p class="exam-hint">표시할 학생이 없어요.</p>'}</div></aside><div class="exam-rooms">${plan.rooms.filter(r=>r.enabled).map(room=>`<section class="exam-room"><header><h2>${room.id}호 <small>${day}반 · ${esc(room.teacher||'감독 미정')}</small></h2><span>${room.columns.reduce((a,b)=>a+b,0)}석</span></header><div class="exam-board">칠판</div><div class="exam-columns" style="--columns:${room.columns.length}">${room.columns.map((n,c)=>`<div class="exam-column"><h3>${esc(check.labels[room.id+':'+c]||'빈 줄')}</h3>${Array.from({length:n},(_,r)=>{const key=seatKey(room.id,c,r),student=students.get(plan.seats[key]);return `<div class="exam-seat" data-seat="${key}" ${can?'tabindex="0" role="button"':''} aria-label="${room.id}호 ${c+1}열 ${r+1}번 ${student?esc(student.name):'빈자리'}">${student?card(student):`<span class="exam-seat-number">${c+1}-${r+1}</span>`}</div>`;}).join('')}</div>`).join('')}</div></section>`).join('')}</div></div><div class="exam-legend">${[...new Set(plan.students.map(x=>x.currentClass))].map(name=>`<span><i style="background:${classColor(name)}"></i>${esc(name)}</span>`).join('')}</div>`);
+  const mixing=mixMetrics(plan),certificate=plan.optimization;
+  const status=certificate?.status==='optimal'&&certificate.certifiedMix===mixing.penalty?'선행반 섞임 최소 확인':certificate?.status==='best_found'?'현재까지 찾은 최선 · 최적 여부 미확인':'현재 배치 · 최적 여부 미검증';
+  $('.exam-toolbar').insertAdjacentHTML('afterend',`<div class="exam-overlap" role="status"><strong>선행반 섞임 ${mixing.penalty}점</strong> · 혼합 ${mixing.mixedColumns}열 · 한 줄 최대 ${mixing.maxTypes}종류 · ${status}<br><small>섞임 점수: 줄마다 선행반 종류 수에서 1을 뺀 값의 합계. 담당이 다르면 별도 선행반이에요. 최소 확인은 이 점수에 대한 검증이며 403호 채움·담임 겹침까지 최적임을 뜻하지 않아요.</small>${busy?'<p id="examSearchProgress">인원 묶음으로 전원 배치를 찾고 있어요…</p>':''}</div>`);
   const bind=(id,fn)=>$('#'+id)?.addEventListener('click',fn);
   bind('examSettings',()=>config());bind('examImport',importRoster);bind('examRoomSettings',roomsDialog);bind('examAbsences',absenceDialog);bind('examAuto',automatic);bind('examSave',save);bind('examPapers',countsDialog);bind('examPDF',pdfDialog);
   bind('examClear',()=>{if(!editable()||!confirm(`${day}반 좌석을 모두 비울까요? 불참 상태와 명단은 유지돼요.`))return;checkpoint();plan.seats={};selected=null;changed();});

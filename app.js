@@ -1,4 +1,4 @@
-import {createExamSeating} from './exam-seating.mjs?v=20261127-exam1';
+import {createExamSeating} from './exam-seating.mjs?v=20261128-solver1';
 import {createUsageGuide} from './usage-guide.mjs?v=20261127-guide3';
 import {createAttendanceExport} from './attendance-export.mjs?v=20261127-excel2';
 import {sortTeachers} from './ui-order.mjs?v=20261126-order2';
